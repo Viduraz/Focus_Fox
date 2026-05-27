@@ -39,6 +39,6 @@ export const LMS_PATTERNS = {
 export const FEATURES = {
   FOCUS_MODE: true,
   DARK_MODE: true,
-  SMART_HIGHLIGHTS: false,
+  SMART_HIGHLIGHTS: true,
   AI_SUMMARY: false,
 } as const;

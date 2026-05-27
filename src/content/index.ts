@@ -11,6 +11,7 @@ import { getSettings } from '../storage';
 import { STORAGE_KEYS } from '../utils/constants';
 import { applyDarkMode } from './darkMode';
 import { applyFocusMode } from './focusMode';
+import { applySmartHighlights } from './highlightEngine';
 
 const CONTEXT = 'Content';
 
@@ -74,6 +75,7 @@ async function initialize() {
   if (settings && settings.features) {
     applyDarkMode(settings.features.darkMode);
     applyFocusMode(settings.features.focusMode);
+    applySmartHighlights(settings.features.smartHighlights);
   }
 
   // Listen for real-time toggles from chrome.storage.sync
@@ -83,10 +85,11 @@ async function initialize() {
       if (updatedSettings && updatedSettings.features) {
         logger.info(
           CONTEXT,
-          `Settings changed. Dark Mode: ${updatedSettings.features.darkMode}, Focus Mode: ${updatedSettings.features.focusMode}`,
+          `Settings changed. Dark Mode: ${updatedSettings.features.darkMode}, Focus Mode: ${updatedSettings.features.focusMode}, Highlights: ${updatedSettings.features.smartHighlights}`,
         );
         applyDarkMode(updatedSettings.features.darkMode);
         applyFocusMode(updatedSettings.features.focusMode);
+        applySmartHighlights(updatedSettings.features.smartHighlights);
       }
     }
   });

@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * FocusFox Global Styles
+ *
+ * Base layer: Reset & extension popup defaults
+ * Components layer: Reusable glass-card, gradient-text utilities
+ * Utilities layer: Custom transition helpers
+ */
+
+@layer base {
+  body {
+    @apply bg-dark-950 text-white antialiased;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    /* Prevent popup from having a scrollbar flash */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+
+  *,
+  *::before,
+  *::after {
+    @apply box-border;
+  }
+
+  /* Remove default focus outline, add custom */
+  :focus-visible {
+    @apply outline-none ring-2 ring-fox-500/50 ring-offset-2 ring-offset-dark-950 rounded-lg;
+  }
+}
+
+@layer components {
+  /* Glassmorphism card base */
+  .glass-card {
+    @apply bg-white/[0.04] backdrop-blur-md border border-white/[0.06] rounded-2xl;
+  }
+
+  /* Gradient text helper */
+  .gradient-text-fox {
+    @apply bg-gradient-to-r from-fox-300 via-fox-400 to-fox-500 bg-clip-text text-transparent;
+  }
+
+  /* Fox-orange ambient glow */
+  .glow-fox {
+    box-shadow:
+      0 0 20px rgba(249, 115, 22, 0.12),
+      0 0 60px rgba(249, 115, 22, 0.04);
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .transition-fast {
+    @apply transition-all duration-150 ease-out;
+  }
+}

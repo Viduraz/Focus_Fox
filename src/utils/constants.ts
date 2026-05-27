@@ -37,7 +37,7 @@ export const LMS_PATTERNS = {
  * Subsequent phases will enable features incrementally.
  */
 export const FEATURES = {
-  FOCUS_MODE: false,
+  FOCUS_MODE: true,
   DARK_MODE: true,
   SMART_HIGHLIGHTS: false,
   AI_SUMMARY: false,

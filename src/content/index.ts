@@ -10,6 +10,7 @@ import { logger } from '../utils/logger';
 import { getSettings } from '../storage';
 import { STORAGE_KEYS } from '../utils/constants';
 import { applyDarkMode } from './darkMode';
+import { applyFocusMode } from './focusMode';
 
 const CONTEXT = 'Content';
 
@@ -68,10 +69,11 @@ async function initialize() {
 
   logger.info(CONTEXT, 'FocusFox active on LMS platform');
 
-  // Load initial dark mode state
+  // Load initial settings states
   const settings = await getSettings();
   if (settings && settings.features) {
     applyDarkMode(settings.features.darkMode);
+    applyFocusMode(settings.features.focusMode);
   }
 
   // Listen for real-time toggles from chrome.storage.sync
@@ -81,9 +83,10 @@ async function initialize() {
       if (updatedSettings && updatedSettings.features) {
         logger.info(
           CONTEXT,
-          `Dark Mode settings changed to: ${updatedSettings.features.darkMode}`,
+          `Settings changed. Dark Mode: ${updatedSettings.features.darkMode}, Focus Mode: ${updatedSettings.features.focusMode}`,
         );
         applyDarkMode(updatedSettings.features.darkMode);
+        applyFocusMode(updatedSettings.features.focusMode);
       }
     }
   });

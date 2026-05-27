@@ -17,7 +17,7 @@ export interface FeatureState {
 
 // ─── Extension Settings ──────────────────────────────────────────────────────
 
-/** Persisted extension settings stored in chrome.storage.local */
+/** Persisted extension settings stored in chrome.storage.sync */
 export interface ExtensionSettings {
   features: FeatureState;
   version: string;

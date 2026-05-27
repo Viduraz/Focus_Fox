@@ -38,7 +38,7 @@ export const LMS_PATTERNS = {
  */
 export const FEATURES = {
   FOCUS_MODE: false,
-  DARK_MODE: false,
+  DARK_MODE: true,
   SMART_HIGHLIGHTS: false,
   AI_SUMMARY: false,
 } as const;

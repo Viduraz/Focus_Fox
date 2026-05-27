@@ -2,10 +2,7 @@
  * Chrome Storage API wrapper for FocusFox.
  *
  * Architecture Decision:
- * Using chrome.storage.local for persistence across browser sessions.
- * This will migrate to chrome.storage.sync when cross-device syncing
- * is needed in later phases.
- *
+ * Using chrome.storage.sync for persistence across browser sessions and devices.
  * All reads/writes are wrapped with error handling and logging to
  * prevent silent storage failures.
  */
@@ -30,12 +27,12 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
 };
 
 /**
- * Retrieves current extension settings from chrome.storage.local.
+ * Retrieves current extension settings from chrome.storage.sync.
  * Returns default settings if none are persisted yet.
  */
 export async function getSettings(): Promise<ExtensionSettings> {
   try {
-    const result = await chrome.storage.local.get(STORAGE_KEYS.SETTINGS);
+    const result = await chrome.storage.sync.get(STORAGE_KEYS.SETTINGS);
     return (result[STORAGE_KEYS.SETTINGS] as ExtensionSettings) ?? DEFAULT_SETTINGS;
   } catch (error) {
     logger.error(CONTEXT, 'Failed to retrieve settings', error);
@@ -57,7 +54,7 @@ export async function saveSettings(
       ...settings,
       lastActiveAt: Date.now(),
     };
-    await chrome.storage.local.set({ [STORAGE_KEYS.SETTINGS]: updated });
+    await chrome.storage.sync.set({ [STORAGE_KEYS.SETTINGS]: updated });
     logger.info(CONTEXT, 'Settings saved successfully');
   } catch (error) {
     logger.error(CONTEXT, 'Failed to save settings', error);

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "FocusFox",
   "version": "0.1.0",
-  "description": "AI-powered student productivity extension for LMS platforms like Moodle and SLIIT CourseWeb. Focus smarter, not harder.",
+  "description": "Intelligent student productivity extension for LMS platforms like Moodle and SLIIT CourseWeb. Focus smarter, not harder.",
   "permissions": [
     "storage",
     "activeTab",

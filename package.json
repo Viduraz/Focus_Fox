@@ -2,7 +2,7 @@
   "name": "focusfox",
   "private": true,
   "version": "0.1.0",
-  "description": "AI-powered student productivity Chrome Extension for LMS platforms",
+  "description": "Intelligent student productivity Chrome Extension for LMS platforms",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -1,6 +1,6 @@
 # 🦊 FocusFox
 
-> **AI-powered & DOM-intelligent student productivity Chrome Extension for LMS platforms like Moodle & SLIIT CourseWeb.**
+> **DOM-intelligent & rule-based student productivity Chrome Extension for LMS platforms like Moodle & SLIIT CourseWeb.**
 
 FocusFox helps students focus smarter — blocking distractions, applying comfortable dark themes, highlighting important content, and parsing course pages to extract upcoming exams, quizzes, assignments, and grades into a beautiful productivity dashboard.
 

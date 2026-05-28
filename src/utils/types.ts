@@ -35,11 +35,19 @@ export interface RadarFinding {
   urgency: 'high' | 'medium' | 'low';
 }
 
+export interface RadarSettings {
+  enabledCategories: Record<RadarCategory, boolean>;
+  compactMode: boolean;
+  colorTheme: 'fox' | 'blue' | 'purple' | 'green';
+  urgencySensitivity: 'standard' | 'high' | 'relaxed';
+}
+
 // ─── Extension Settings ──────────────────────────────────────────────────────
 
 /** Persisted extension settings stored in chrome.storage.sync */
 export interface ExtensionSettings {
   features: FeatureState;
+  radarSettings: RadarSettings;
   version: string;
   installedAt: number;
   lastActiveAt: number;

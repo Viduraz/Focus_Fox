@@ -1,9 +1,6 @@
-/**
- * FocusFox — Smart Academic Dashboard Types (Phase 5.5)
- *
- * Shared interfaces and type definitions for the entire radar subsystem.
- * All modules import from here — never define types inline elsewhere.
- */
+import type { RadarSettings } from '../../utils/types';
+
+export type { RadarSettings };
 
 // ─── Core domain types ────────────────────────────────────────────────────────
 
@@ -63,4 +60,6 @@ export interface DashboardState {
   activeFilter: FilterTab;
   collapsedSections: Set<RadarCategory>;
   lastScanAt: number; // Date.now() timestamp
+  view: 'dashboard' | 'settings';
+  radarSettings: RadarSettings;
 }

@@ -10,7 +10,7 @@
  * and the "Latest Alerts" strip.
  */
 
-import type { RadarFinding, RadarCategory, UrgencyLevel } from './types';
+import type { RadarFinding, RadarCategory, UrgencyLevel, RadarSettings } from './types';
 
 // ─── Scoring tables ───────────────────────────────────────────────────────────
 
@@ -62,16 +62,52 @@ function dateProximityBonus(detectedDate?: string): number {
 /**
  * Computes and attaches a priority score to each finding, then sorts
  * the array descending (highest score first).
+ * Respects user settings for disabled categories and urgency sensitivity.
  */
-export function applyScores(findings: RadarFinding[]): RadarFinding[] {
-  return findings
-    .map((f) => ({
-      ...f,
-      score:
-        CAT_BASE[f.category] +
-        URG_BONUS[f.urgency] +
-        dateProximityBonus(f.detectedDate),
-    }))
+export function applyScores(
+  findings: RadarFinding[],
+  settings?: RadarSettings,
+): RadarFinding[] {
+  // Filter by enabled categories
+  let filtered = findings;
+  if (settings?.enabledCategories) {
+    filtered = findings.filter((f) => settings.enabledCategories[f.category] !== false);
+  }
+
+  return filtered
+    .map((f) => {
+      let urgency = f.urgency;
+      let sensitivityBonus = 0;
+
+      if (settings?.urgencySensitivity === 'high') {
+        sensitivityBonus = 5;
+        if (urgency === 'low') {
+          urgency = 'medium';
+        } else if (urgency === 'medium') {
+          urgency = 'high';
+        }
+      } else if (settings?.urgencySensitivity === 'relaxed') {
+        sensitivityBonus = -3;
+        // Don't downgrade exams or deadlines, only other categories
+        if (f.category !== 'exam' && f.category !== 'deadline') {
+          if (urgency === 'high') {
+            urgency = 'medium';
+          } else if (urgency === 'medium') {
+            urgency = 'low';
+          }
+        }
+      }
+
+      return {
+        ...f,
+        urgency,
+        score:
+          CAT_BASE[f.category] +
+          URG_BONUS[urgency] +
+          dateProximityBonus(f.detectedDate) +
+          sensitivityBonus,
+      };
+    })
     .sort((a, b) => b.score - a.score);
 }
 

@@ -3,29 +3,19 @@ import { Header } from './components/Header';
 import { FeatureCard } from './components/FeatureCard';
 import { ExamRadarButton } from './components/ExamRadarButton';
 import { StatusSection } from './components/StatusSection';
+import { SettingsView } from './components/SettingsView';
 import type { FeatureCardConfig, ExtensionSettings } from '../utils/types';
 import { getSettings, saveSettings } from '../storage';
 import { FEATURES } from '../utils/constants';
 
 /**
- * Root popup application shell — Phase 5.5
- *
- * Layout:
- * ┌──────────────────┐
- * │  Header / Brand  │
- * ├──────────────────┤
- * │  Feature Grid    │
- * │  (3 cards + CTA) │
- * ├──────────────────┤
- * │  Error notice?   │ ← shown only when Exam Radar can't reach the page
- * ├──────────────────┤
- * │  Status Section  │
- * └──────────────────┘
+ * Root popup application shell — Phase 6
  */
 function App() {
   const [settings, setSettings] = useState<ExtensionSettings | null>(null);
   const [radarLoading, setRadarLoading] = useState(false);
   const [radarError, setRadarError] = useState<string | null>(null);
+  const [isSettingsView, setIsSettingsView] = useState(false);
 
   // Load settings from sync storage on mount
   useEffect(() => {
@@ -55,15 +45,16 @@ function App() {
     await saveSettings({ features: updatedFeatures });
   };
 
+  const handleUpdateRadarSettings = async (updates: Partial<ExtensionSettings['radarSettings']>) => {
+    if (!settings) return;
+    const updatedRadar = { ...settings.radarSettings, ...updates };
+    const updatedSettings = { ...settings, radarSettings: updatedRadar };
+    setSettings(updatedSettings);
+    await saveSettings({ radarSettings: updatedRadar });
+  };
+
   /**
    * Sends TOGGLE_EXAM_RADAR to the active tab's content script.
-   *
-   * Three outcomes:
-   *  1. success: true  → panel toggled, close popup so it's visible
-   *  2. success: false, reason: 'not_lms_page' → show inline guidance
-   *  3. sendMessage throws (script not injected at all) → show inline guidance
-   *
-   * We never rely on window.close() on failure so the user can read the error.
    */
   const handleExamRadar = async () => {
     setRadarLoading(true);
@@ -83,8 +74,6 @@ function App() {
       try {
         response = await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_EXAM_RADAR' });
       } catch {
-        // Content script not reachable — most likely a chrome:// page or the
-        // extension was reloaded without refreshing the tab.
         setRadarError('Open a Moodle / LMS page, then try again. (If you just installed FocusFox, refresh the LMS tab first.)');
         setRadarLoading(false);
         return;
@@ -133,62 +122,81 @@ function App() {
   ];
 
   return (
-    <div className="w-[380px] min-h-[520px] bg-dark-950 text-white font-sans relative overflow-hidden">
+    <div className="w-[380px] min-h-[520px] bg-dark-950 text-white font-sans relative overflow-hidden flex flex-col justify-between">
       {/* Ambient background gradient */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-fox-500/[0.04] rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative z-10">
-        <Header />
+      <div className="relative z-10 flex-1 flex flex-col justify-between">
+        <div>
+          <Header 
+            onToggleSettings={() => setIsSettingsView(!isSettingsView)} 
+            isSettingsView={isSettingsView} 
+          />
 
-        <main className="px-4 pb-5">
-          {/* Feature Grid — 3 toggle cards + full-width Exam Radar CTA */}
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            {featureConfigs.map((feature) => {
-              const isChecked = settings
-                ? (feature.id === 'dark-mode' ? settings.features.darkMode
-                  : feature.id === 'focus-mode' ? settings.features.focusMode
-                  : feature.id === 'smart-highlights' ? settings.features.smartHighlights
-                  : false)
-                : false;
+          <main className="transition-all duration-300">
+            {isSettingsView && settings ? (
+              <SettingsView 
+                settings={settings} 
+                onUpdateRadarSettings={handleUpdateRadarSettings} 
+              />
+            ) : (
+              <div className="px-4 pb-5">
+                {/* Feature Grid — 3 toggle cards + full-width Exam Radar CTA */}
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  {featureConfigs.map((feature) => {
+                    const isChecked = settings
+                      ? (feature.id === 'dark-mode' ? settings.features.darkMode
+                        : feature.id === 'focus-mode' ? settings.features.focusMode
+                        : feature.id === 'smart-highlights' ? settings.features.smartHighlights
+                        : false)
+                      : false;
 
-              return (
-                <FeatureCard
-                  key={feature.id}
-                  {...feature}
-                  checked={isChecked}
-                  onClick={() => handleFeatureToggle(feature.id)}
-                />
-              );
-            })}
+                    return (
+                      <FeatureCard
+                        key={feature.id}
+                        {...feature}
+                        checked={isChecked}
+                        onClick={() => handleFeatureToggle(feature.id)}
+                      />
+                    );
+                  })}
 
-            <div className="col-span-2">
-              <ExamRadarButton onClick={handleExamRadar} loading={radarLoading} />
-            </div>
+                  <div className="col-span-2">
+                    <ExamRadarButton onClick={handleExamRadar} loading={radarLoading} />
+                  </div>
+                </div>
+
+                {/* Inline error / guidance banner */}
+                {radarError && (
+                  <div className="
+                    mb-3 px-3.5 py-2.5 rounded-xl
+                    bg-fox-500/[0.08] border border-fox-500/[0.18]
+                    flex items-start gap-2.5
+                  ">
+                    <span className="text-base leading-none mt-0.5 flex-shrink-0">⚠️</span>
+                    <p className="text-[11px] text-white/55 leading-relaxed">
+                      {radarError}
+                    </p>
+                    <button
+                      onClick={() => setRadarError(null)}
+                      className="ml-auto flex-shrink-0 text-white/25 hover:text-white/50 text-sm leading-none transition-colors"
+                      aria-label="Dismiss"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </main>
+        </div>
+
+        {/* Status section at the bottom */}
+        {!isSettingsView && (
+          <div className="px-4 pb-5">
+            <StatusSection />
           </div>
-
-          {/* Inline error / guidance banner */}
-          {radarError && (
-            <div className="
-              mb-3 px-3.5 py-2.5 rounded-xl
-              bg-fox-500/[0.08] border border-fox-500/[0.18]
-              flex items-start gap-2.5
-            ">
-              <span className="text-base leading-none mt-0.5 flex-shrink-0">⚠️</span>
-              <p className="text-[11.5px] text-white/55 leading-relaxed">
-                {radarError}
-              </p>
-              <button
-                onClick={() => setRadarError(null)}
-                className="ml-auto flex-shrink-0 text-white/25 hover:text-white/50 text-sm leading-none transition-colors"
-                aria-label="Dismiss"
-              >
-                ✕
-              </button>
-            </div>
-          )}
-
-          <StatusSection />
-        </main>
+        )}
       </div>
     </div>
   );

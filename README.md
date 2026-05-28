@@ -1,8 +1,8 @@
 # 🦊 FocusFox
 
-> **AI-powered student productivity Chrome Extension for LMS platforms like Moodle & SLIIT CourseWeb.**
+> **AI-powered & DOM-intelligent student productivity Chrome Extension for LMS platforms like Moodle & SLIIT CourseWeb.**
 
-FocusFox helps students focus smarter — blocking distractions, applying comfortable dark themes, highlighting important content, and summarizing course material with AI.
+FocusFox helps students focus smarter — blocking distractions, applying comfortable dark themes, highlighting important content, and parsing course pages to extract upcoming exams, quizzes, assignments, and grades into a beautiful productivity dashboard.
 
 ---
 
@@ -10,10 +10,13 @@ FocusFox helps students focus smarter — blocking distractions, applying comfor
 
 | Phase | Status | Scope |
 |-------|--------|-------|
-| **Phase 1** | ✅ Complete | Architecture, bootstrapping, popup UI foundation |
-| Phase 2 | 🔲 Planned | Focus Mode, Dark Mode |
-| Phase 3 | 🔲 Planned | Smart Highlights, AI Summary |
-| Phase 4 | 🔲 Planned | LMS integration, polish, publishing |
+| **Phase 1** | ✅ Complete | MV3 Extension bootstrapping, popup UI grid, branding |
+| **Phase 2** | ✅ Complete | Injected **Dark Mode** engine scoping Moodle and LMS elements |
+| **Phase 3** | ✅ Complete | **Focus Mode** blocking distractions and injecting alert widgets |
+| **Phase 4** | ✅ Complete | **Smart Highlight Engine** highlighting key text with color categories |
+| **Phase 5** | ✅ Complete | **Exam Radar Detection** parsing LMS DOM text nodes using keywords |
+| **Phase 5.5**| ✅ Complete | **Dashboard Redesign** introducing "Next Important Task" and "Alerts" |
+| **Phase 6** | ✅ Complete | **Product Polish + Branding** with staggered shimmers, typography, custom accent themes, urgency sensitivity, and real-time syncing settings |
 
 ---
 
@@ -25,47 +28,55 @@ focusfox/
 │   ├── manifest.json          # Chrome MV3 manifest
 │   └── icons/                 # Extension icons (16/48/128px)
 ├── src/
-│   ├── popup/                 # React popup UI
+│   ├── popup/                 # React popup UI (Tailwind CSS)
 │   │   ├── main.tsx           # Entry point
-│   │   ├── App.tsx            # Root component
-│   │   └── components/        # UI components
-│   │       ├── FoxLogo.tsx    # SVG fox logo
-│   │       ├── Header.tsx     # Branding header
-│   │       ├── FeatureCard.tsx # Feature card grid item
-│   │       └── StatusSection.tsx
+│   │   ├── App.tsx            # Root dashboard controller & router
+│   │   └── components/        # React UI components
+│   │       ├── FoxLogo.tsx    # SVG brand fox logo
+│   │       ├── Header.tsx     # Branding header with settings toggle
+│   │       ├── FeatureCard.tsx # Grid toggler for main modules
+│   │       ├── SettingsView.tsx # Popup settings view (categories, theme, sensitivity)
+│   │       ├── ExamRadarButton.tsx # Call-to-action button for Radar
+│   │       └── StatusSection.tsx # Extension health indicator
 │   ├── background/            # MV3 service worker
-│   │   └── index.ts           # Lifecycle events & logging
-│   ├── content/               # Content script (injected into pages)
-│   │   └── index.ts           # DOM context entry
+│   │   └── index.ts           # Service worker entry
+│   ├── content/               # Content script injected into LMS pages
+│   │   ├── index.ts           # LMS detection & feature loaders
+│   │   ├── darkMode.ts        # Dark Mode injection logic
+│   │   ├── focusMode.ts       # Pomodoro & blocker injection
+│   │   ├── highlightEngine.ts # Keyword-driven highlight markers
+│   │   ├── examRadar.ts       # Re-exports dashboardUI entry point
+│   │   └── radar/             # Exam Radar System (Pure TypeScript DOM)
+│   │       ├── types.ts       # Shared TypeScript types & state
+│   │       ├── detector.ts    # TreeWalker parser extracting DOM TextBlocks
+│   │       ├── parser.ts      # Context extractors, regex dates & keywords
+│   │       ├── priorityEngine.ts # Urgency scoring & sensitivity offsets
+│   │       ├── filters.ts     # Dashboard filtering & category tab mappings
+│   │       ├── icons.ts       # Inline SVG templates for Lucide icons
+│   │       └── dashboardUI.ts # Side-panel view manager & dynamic styles
 │   ├── storage/               # Chrome Storage API wrapper
-│   │   └── index.ts           # Type-safe get/save settings
-│   ├── utils/                 # Shared utilities
-│   │   ├── constants.ts       # App-wide constants & feature flags
-│   │   ├── logger.ts          # Color-coded logging utility
-│   │   └── types.ts           # Shared TypeScript types
-│   └── styles/
-│       └── globals.css        # Tailwind directives & custom utilities
+│   │   └── index.ts           # Type-safe sync storage utils
+│   └── utils/                 # Shared utilities
+│       ├── constants.ts       # App constants, LMS patterns & feature flags
+│       ├── logger.ts          # Prefix-scoped console logger
+│       └── types.ts           # Extension configuration interfaces
 ├── index.html                 # Popup HTML entry (Vite convention)
-├── package.json
-├── tsconfig.json
-├── tsconfig.node.json
-├── vite.config.ts             # Vite + custom esbuild plugin
-├── tailwind.config.ts         # Brand palette & animations
-├── postcss.config.js
-└── README.md
+├── vite.config.ts             # Vite + custom esbuild compiler config
+├── tailwind.config.ts         # Popup design system palette & utilities
+└── package.json               # Package dependencies & scripts
 ```
 
-### Build Architecture
+### Build Pipeline
 
-The project uses **Vite** for the popup React app and a **custom Vite plugin** that compiles the background service worker and content script as standalone IIFE bundles via esbuild (bundled with Vite).
+Vite compiles the popup React application, while custom bundler pipelines compile the background service worker and content scripts into standalone IIFE assets:
 
 ```
-Source                    Build Tool        Output
-─────────────────────     ──────────        ──────────────
-src/popup/* + index.html  → Vite/React   → dist/index.html + assets/
-src/background/index.ts   → esbuild      → dist/background.js (IIFE)
-src/content/index.ts      → esbuild      → dist/content.js (IIFE)
-public/*                  → Vite copy    → dist/manifest.json + icons/
+Source File               Compiler          Output Asset
+─────────────────────     ──────────        ──────────────────────
+src/popup/*               → Vite/React   →  dist/index.html + dist/assets/
+src/background/index.ts   → esbuild      →  dist/background.js
+src/content/index.ts      → esbuild      →  dist/content.js
+public/*                  → static copy  →  dist/manifest.json + dist/icons/
 ```
 
 ---
@@ -76,82 +87,49 @@ public/*                  → Vite copy    → dist/manifest.json + icons/
 
 - **Node.js** ≥ 18
 - **npm** ≥ 9
-- **Google Chrome** (latest)
+- **Google Chrome**
 
-### Installation
+### Installation & Build
 
 ```bash
-# Clone or navigate to the project
+# Clone the repository and navigate inside
 cd focusfox
 
 # Install dependencies
 npm install
 
-# Build the extension
+# Run production build
 npm run build
 ```
 
-### Load into Chrome
+### Load Into Chrome
 
 1. Open Chrome and navigate to `chrome://extensions/`
-2. Enable **Developer mode** (toggle in top-right)
-3. Click **"Load unpacked"**
-4. Select the `dist/` folder from this project
-5. The FocusFox icon will appear in your extensions toolbar
-
-### Development
-
-```bash
-# Start Vite dev server (popup hot-reload)
-npm run dev
-
-# Production build
-npm run build
-```
-
-> **Note:** `npm run dev` starts a Vite dev server for the popup UI only. To test the full extension (background + content scripts), run `npm run build` and reload the unpacked extension in Chrome.
+2. Enable **Developer mode** (toggle in the top-right corner)
+3. Click **"Load unpacked"** in the top-left
+4. Select the build output directory `dist/` from this project
+5. FocusFox is now installed and active! Navigate to a Moodle page or test course page to try it out.
 
 ---
 
-## 🎨 Design System
+## 🎨 Design System & Styling
 
-### Color Palette
+FocusFox sports a custom dark theme design built with Poppins and Inter typography.
 
-| Token | Hex | Usage |
-|-------|-----|-------|
-| `fox-500` | `#f97316` | Primary brand accent |
-| `fox-300` | `#fdba74` | Gradient highlights |
-| `fox-600` | `#ea580c` | Hover / active states |
-| `dark-950` | `#0a0f1e` | Popup background |
-| `dark-900` | `#0f172a` | Card backgrounds |
+### Accent Customization Themes
+The dashboard can be styled in real-time using four accent themes that update CSS custom properties dynamically:
+* 🦊 **Fox Orange**: `#f97316` (rgb: `249, 115, 22`)
+* 🌊 **Ocean Blue**: `#3b82f6` (rgb: `59, 130, 246`)
+* 👑 **Royal Purple**: `#8b5cf6` (rgb: `139, 92, 246`)
+* 🌲 **Forest Green**: `#10b981` (rgb: `16, 185, 129`)
+
+### Layout Modes
+* **Standard Mode**: Detailed card blocks containing parsed description excerpts and action icons.
+* **Compact Mode**: Collapsed layout hiding detail blocks to present a quick list view of deadlines and notices.
 
 ### Typography
-
-- **Font:** Inter (loaded from Google Fonts, system-ui fallback)
-- **Weights:** 400 (body), 500 (labels), 600 (headings), 700-800 (brand)
-
-### Components
-
-- **Glass Card** (`.glass-card`) — semi-transparent card with backdrop blur
-- **Gradient Text** (`.gradient-text-fox`) — fox-orange gradient text
-- **Fox Glow** (`.glow-fox`) — ambient orange box shadow
-
----
-
-## 🗺 Planned Features
-
-### Phase 2 — Core Features
-- **Focus Mode:** Pomodoro-style timer with distraction blocking
-- **Dark Mode:** Custom dark theme injection for LMS pages
-
-### Phase 3 — Intelligence
-- **Smart Highlights:** AI-powered content highlighting on course pages
-- **AI Summary:** One-click course material summarization
-
-### Phase 4 — Polish
-- LMS-specific integrations (Moodle, SLIIT CourseWeb)
-- Cross-device settings sync
-- Chrome Web Store publishing
+* **Headers & Brand Elements**: Poppins (Google Fonts)
+* **Secondary & Body Details**: Inter (Google Fonts)
 
 ---
 
@@ -159,12 +137,13 @@ npm run build
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| Chrome Extensions MV3 | - | Extension platform |
-| React | 18.x | Popup UI framework |
-| TypeScript | 5.x | Type safety |
-| Vite | 5.x | Build tool + dev server |
-| Tailwind CSS | 3.4.x | Utility-first styling |
-| esbuild | (via Vite) | Background/content script compilation |
+| Chrome Extensions MV3 | - | Native Extension Platform |
+| React | 18.x | Popup UI View Layer |
+| TypeScript | 5.x | Source Type Safety |
+| Vite | 5.x | Bundler & Development Server |
+| Tailwind CSS | 3.x | Popup Layout & Styling |
+| lucide-react | latest | Vector icon components for popup settings |
+| esbuild | (via Vite) | High-speed content & background script compiler |
 
 ---
 

@@ -21,6 +21,20 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
     smartHighlights: false,
     examRadar: false,
   },
+  radarSettings: {
+    enabledCategories: {
+      exam: true,
+      quiz: true,
+      assignment: true,
+      deadline: true,
+      submission: true,
+      marks: true,
+      important: true,
+    },
+    compactMode: false,
+    colorTheme: 'fox',
+    urgencySensitivity: 'standard',
+  },
   version: APP_VERSION,
   installedAt: Date.now(),
   lastActiveAt: Date.now(),
@@ -33,7 +47,25 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
 export async function getSettings(): Promise<ExtensionSettings> {
   try {
     const result = await chrome.storage.sync.get(STORAGE_KEYS.SETTINGS);
-    return (result[STORAGE_KEYS.SETTINGS] as ExtensionSettings) ?? DEFAULT_SETTINGS;
+    const retrieved = result[STORAGE_KEYS.SETTINGS] as ExtensionSettings | undefined;
+    if (!retrieved) return DEFAULT_SETTINGS;
+
+    return {
+      ...DEFAULT_SETTINGS,
+      ...retrieved,
+      features: {
+        ...DEFAULT_SETTINGS.features,
+        ...(retrieved.features ?? {}),
+      },
+      radarSettings: {
+        ...DEFAULT_SETTINGS.radarSettings,
+        ...(retrieved.radarSettings ?? {}),
+        enabledCategories: {
+          ...DEFAULT_SETTINGS.radarSettings.enabledCategories,
+          ...(retrieved.radarSettings?.enabledCategories ?? {}),
+        }
+      }
+    };
   } catch (error) {
     logger.error(CONTEXT, 'Failed to retrieve settings', error);
     return DEFAULT_SETTINGS;

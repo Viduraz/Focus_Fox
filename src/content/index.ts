@@ -1,9 +1,12 @@
 /**
- * FocusFox — Content Script
+ * FocusFox — Content Script (Phase 5.5)
  *
- * Injected into web pages. Checks if the page is a supported LMS platform
- * (Moodle, SLIIT CourseWeb, or custom Moodle instances) and applies/toggles
- * the Phase 2 Dark Mode system.
+ * Injected into all pages by manifest. The message listener is registered
+ * unconditionally so the popup can always reach it and receive a structured
+ * response (including "not an LMS page") rather than a hard connection error.
+ *
+ * Feature initialisation (dark mode, focus mode, highlights) still only runs
+ * on verified LMS platforms.
  */
 
 import { logger } from '../utils/logger';
@@ -12,6 +15,7 @@ import { STORAGE_KEYS } from '../utils/constants';
 import { applyDarkMode } from './darkMode';
 import { applyFocusMode } from './focusMode';
 import { applySmartHighlights } from './highlightEngine';
+import { toggleExamRadar } from './examRadar';
 
 const CONTEXT = 'Content';
 
@@ -32,7 +36,7 @@ function isLMSPage(): boolean {
 
     if (isMatchedDomain) return true;
 
-    // 2. Meta tags check (Moodle self-hosted tags)
+    // 2. Meta tags check (Moodle self-hosted instances)
     const metaGenerator = document.querySelector('meta[name="generator"]');
     if (
       metaGenerator &&
@@ -58,42 +62,69 @@ function isLMSPage(): boolean {
   return false;
 }
 
-/**
- * Initializes the content script.
- * Scopes execution only to verified LMS platforms.
- */
+// ── Message listener — registered ALWAYS, before the LMS guard ───────────────
+//
+// Why: the popup sends chrome.tabs.sendMessage and awaits a reply.
+// If no listener exists in this context, Chrome throws
+// "Could not establish connection. Receiving end does not exist."
+// By registering unconditionally we can return a typed error response instead.
+//
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type !== 'TOGGLE_EXAM_RADAR') return false;
+
+  if (!isLMSPage()) {
+    // Let the popup know this tab isn't an LMS page so it can show guidance
+    sendResponse({ success: false, reason: 'not_lms_page' });
+    return true;
+  }
+
+  try {
+    toggleExamRadar();
+    sendResponse({ success: true });
+  } catch (err) {
+    logger.error(CONTEXT, 'Failed to toggle Exam Radar', err);
+    sendResponse({ success: false, reason: 'toggle_failed' });
+  }
+
+  return true; // keep the message channel open for the async sendResponse
+});
+
+// ── LMS-only initialisation ───────────────────────────────────────────────────
+
 async function initialize() {
   if (!isLMSPage()) {
-    logger.debug(CONTEXT, 'Not an LMS platform. Exiting content script.');
+    logger.debug(CONTEXT, 'Not an LMS platform — feature init skipped.');
     return;
   }
 
   logger.info(CONTEXT, 'FocusFox active on LMS platform');
 
-  // Load initial settings states
+  // Apply saved feature states on page load
   const settings = await getSettings();
   if (settings && settings.features) {
     applyDarkMode(settings.features.darkMode);
     applyFocusMode(settings.features.focusMode);
     applySmartHighlights(settings.features.smartHighlights);
+    // Exam Radar is toggle-on-demand — not auto-opened on load
   }
 
-  // Listen for real-time toggles from chrome.storage.sync
+  // Real-time storage listener (toggles from popup switches)
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === 'sync' && changes[STORAGE_KEYS.SETTINGS]) {
-      const updatedSettings = changes[STORAGE_KEYS.SETTINGS].newValue;
-      if (updatedSettings && updatedSettings.features) {
+      const updated = changes[STORAGE_KEYS.SETTINGS].newValue;
+      if (updated && updated.features) {
         logger.info(
           CONTEXT,
-          `Settings changed. Dark Mode: ${updatedSettings.features.darkMode}, Focus Mode: ${updatedSettings.features.focusMode}, Highlights: ${updatedSettings.features.smartHighlights}`,
+          `Settings updated — DarkMode:${updated.features.darkMode} ` +
+          `FocusMode:${updated.features.focusMode} ` +
+          `Highlights:${updated.features.smartHighlights}`,
         );
-        applyDarkMode(updatedSettings.features.darkMode);
-        applyFocusMode(updatedSettings.features.focusMode);
-        applySmartHighlights(updatedSettings.features.smartHighlights);
+        applyDarkMode(updated.features.darkMode);
+        applyFocusMode(updated.features.focusMode);
+        applySmartHighlights(updated.features.smartHighlights);
       }
     }
   });
 }
 
-// Kick off initialization
 initialize();

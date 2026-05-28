@@ -12,7 +12,27 @@ export interface FeatureState {
   focusMode: boolean;
   darkMode: boolean;
   smartHighlights: boolean;
-  aiSummary: boolean;
+  examRadar: boolean;
+}
+
+// ─── Exam Radar Types ─────────────────────────────────────────────────────────
+
+/** Categories detected by the Exam Radar engine */
+export type RadarCategory =
+  | 'exam'
+  | 'quiz'
+  | 'assignment'
+  | 'deadline'
+  | 'submission'
+  | 'marks'
+  | 'important';
+
+/** A single academic finding detected on the page */
+export interface RadarFinding {
+  id: string;
+  category: RadarCategory;
+  text: string;
+  urgency: 'high' | 'medium' | 'low';
 }
 
 // ─── Extension Settings ──────────────────────────────────────────────────────
@@ -55,4 +75,5 @@ export type MessageType =
   | 'TOGGLE_FOCUS_MODE'
   | 'TOGGLE_DARK_MODE'
   | 'GET_SETTINGS'
-  | 'UPDATE_SETTINGS';
+  | 'UPDATE_SETTINGS'
+  | 'TOGGLE_EXAM_RADAR';

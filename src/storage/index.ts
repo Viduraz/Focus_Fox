@@ -19,7 +19,7 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
     focusMode: false,
     darkMode: false,
     smartHighlights: false,
-    aiSummary: false,
+    examRadar: false,
   },
   version: APP_VERSION,
   installedAt: Date.now(),

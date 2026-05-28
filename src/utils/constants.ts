@@ -40,5 +40,5 @@ export const FEATURES = {
   FOCUS_MODE: true,
   DARK_MODE: true,
   SMART_HIGHLIGHTS: true,
-  AI_SUMMARY: false,
+  EXAM_RADAR: true,
 } as const;

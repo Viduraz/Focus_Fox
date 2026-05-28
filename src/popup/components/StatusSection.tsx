@@ -32,7 +32,7 @@ export function StatusSection() {
 
       {/* Footer */}
       <p className="text-center text-[10px] text-white/20 mt-3.5 font-medium tracking-wide">
-        Built for students · Phase 1
+        Built for students · Phase 5
       </p>
     </section>
   );

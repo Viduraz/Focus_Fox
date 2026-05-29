@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FocusFox Privacy Policy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --fox-500: #f97316;
+      --fox-600: #ea580c;
+      --dark-950: #09090b;
+      --dark-900: #18181b;
+      --dark-800: #27272a;
+      --white: #ffffff;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--dark-950);
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background glow */
+    .glow {
+      position: absolute;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: rgba(249, 115, 22, 0.05);
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 720px;
+      width: 100%;
+      background: rgba(24, 24, 27, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(16px);
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 24px;
+    }
+
+    .logo-container {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(249, 115, 22, 0.1);
+      padding: 12px;
+    }
+
+    .logo-container svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .last-updated {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 500;
+    }
+
+    section {
+      margin-bottom: 32px;
+    }
+
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 16px;
+      background: var(--fox-500);
+      border-radius: 2px;
+    }
+
+    p {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 16px;
+    }
+
+    .highlight-card {
+      background: rgba(249, 115, 22, 0.04);
+      border: 1px solid rgba(249, 115, 22, 0.15);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .highlight-card p {
+      margin-bottom: 0;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    ul {
+      list-style-type: none;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    li {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    li strong {
+      color: var(--fox-500);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    li span {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--fox-500);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: color 0.2s ease;
+      background: rgba(249, 115, 22, 0.08);
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(249, 115, 22, 0.15);
+    }
+
+    .contact-link:hover {
+      color: #ff9d5c;
+      background: rgba(249, 115, 22, 0.12);
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 20px 10px;
+      }
+      .container {
+        padding: 24px 20px;
+        border-radius: 16px;
+      }
+      h1 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow"></div>
+
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <svg
+          viewBox="0 0 32 32"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-label="FocusFox logo"
+        >
+          <!-- Left ear -->
+          <path d="M6 3L11 13L4 11L6 3Z" fill="#FDBA74" />
+          <!-- Right ear -->
+          <path d="M26 3L21 13L28 11L26 3Z" fill="#FDBA74" />
+
+          <!-- Inner ear accents -->
+          <path d="M7.5 5L11 12L5.5 10L7.5 5Z" fill="#FED7AA" opacity="0.5" />
+          <path d="M24.5 5L21 12L26.5 10L24.5 5Z" fill="#FED7AA" opacity="0.5" />
+
+          <!-- Head -->
+          <path
+            d="M8 11C8 11 10 7 16 7C22 7 24 11 24 11L22 24H10L8 11Z"
+            fill="url(#foxHead)"
+          />
+
+          <!-- Face / muzzle -->
+          <path d="M12 16L16 24L20 16L18.5 14H13.5L12 16Z" fill="#FFF7ED" />
+
+          <!-- Eyes -->
+          <circle cx="13" cy="15" r="1.5" fill="#1E293B" />
+          <circle cx="19" cy="15" r="1.5" fill="#1E293B" />
+
+          <!-- Eye highlights -->
+          <circle cx="13.5" cy="14.3" r="0.6" fill="white" opacity="0.85" />
+          <circle cx="19.5" cy="14.3" r="0.6" fill="white" opacity="0.85" />
+
+          <!-- Nose -->
+          <ellipse cx="16" cy="19" rx="1.5" ry="1" fill="#7C2D12" />
+
+          <defs>
+            <linearGradient id="foxHead" x1="16" y1="7" x2="16" y2="24" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#FB923C" />
+              <stop offset="1" stopColor="#EA580C" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1>FocusFox Privacy Policy</h1>
+      <div class="last-updated">Last updated: 2026</div>
+    </header>
+
+    <section>
+      <h2>Overview</h2>
+      <p>FocusFox is a productivity extension designed for students using Moodle and SLIIT CourseWeb platforms. Our mission is to help you focus on your studies by optimizing layouts, highlighting key dates, and blocking distractions locally on your device.</p>
+    </section>
+
+    <section>
+      <h2>Data Collection</h2>
+      <div class="highlight-card">
+        <p>FocusFox does NOT collect, store, or transmit any of your personal data, browsing history, or credentials. Your data is entirely yours.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Storage</h2>
+      <p>All configuration options, customized filters, urgency preferences, and extension settings are stored locally on your own device using Chrome's local storage API. No external servers are used to store your preferences.</p>
+    </section>
+
+    <section>
+      <h2>Required Permissions</h2>
+      <ul>
+        <li>
+          <strong>storage</strong>
+          <span>Save and sync your user preferences locally.</span>
+        </li>
+        <li>
+          <strong>activeTab</strong>
+          <span>Apply productivity features exclusively on the user-activated active browser tab.</span>
+        </li>
+        <li>
+          <strong>scripting</strong>
+          <span>Modify the Moodle and SLIIT CourseWeb page layouts to inject Dark Mode and focus tools.</span>
+        </li>
+        <li>
+          <strong>host permissions</strong>
+          <span>Limited strictly to Moodle & SLIIT CourseWeb instances. We do not run on other websites.</span>
+        </li>
+      </ul>
+    </section>
+
+    <section style="margin-bottom: 0;">
+      <h2>Contact & Contribution</h2>
+      <p>FocusFox is open source. You can view the code, raise issues, or read more on our official repository:</p>
+      <a class="contact-link" href="https://github.com/Viduraz/Focus_Fox" target="_blank" rel="noopener noreferrer">
+        <svg style="width: 18px; height: 18px; fill: currentColor; vertical-align: middle;" viewBox="0 0 24 24">
+          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+        </svg>
+        GitHub Repository
+      </a>
+    </section>
+  </div>
+
+</body>
+</html>

@@ -58,6 +58,15 @@ export function SettingsView({ settings, onUpdateRadarSettings }: SettingsViewPr
     onUpdateRadarSettings({ enabledCategories: updatedCategories });
   };
 
+  const handleOpenPrivacy = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (typeof chrome !== 'undefined' && chrome.tabs) {
+      chrome.tabs.create({ url: chrome.runtime.getURL('privacy.html') });
+    } else {
+      window.open('/privacy.html', '_blank');
+    }
+  };
+
   return (
     <div className="px-5 pb-6 text-white/90 space-y-5 animate-in fade-in slide-in-from-right-4 duration-200">
       
@@ -193,6 +202,17 @@ export function SettingsView({ settings, onUpdateRadarSettings }: SettingsViewPr
             );
           })}
         </div>
+      </div>
+
+      {/* Privacy Policy Link */}
+      <div className="pt-2 text-center border-t border-white/[0.04]">
+        <a
+          href="#"
+          onClick={handleOpenPrivacy}
+          className="text-[10px] font-semibold text-white/25 hover:text-fox-400 hover:underline transition-all duration-200"
+        >
+          Privacy Policy
+        </a>
       </div>
 
     </div>
